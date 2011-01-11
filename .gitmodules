@@ -11,3 +11,6 @@
 [submodule "lib/html5-boilerplate"]
 	path = lib/html5-boilerplate
 	url = http://github.com/robrighter/html5-boilerplate.git
+[submodule "lib/mongoose"]
+	path = lib/mongoose
+	url = git://github.com/LearnBoost/mongoose.git
