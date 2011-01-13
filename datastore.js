@@ -10,7 +10,7 @@
     var sys = require('sys');
     var that = this;
     //setup the db
-    var db = mongoose.connect(settings.MongoConnectionString); //TODO: Get this out into a settings file
+    var db = mongoose.connect(settings.MongoConnectionString);
     
     //////////////////////////////////////////////////
     //            System Models
@@ -194,12 +194,12 @@
     /////////////////////////////////////////////////////
     //           primatives
     ////////////////////////////////////////////////////
-    var fieldTypes = { //TODO: make real classes for each primative type (image uploads and whatnot)
+    var fieldTypes = {
       Text: String,
       RichText: String
     }
   
-    function setupPrimativeContentTypes(){ //TODO: finish up these primative content types
+    function setupPrimativeContentTypes(){
       //folder
       that.createContentType('Folder', {
         properties: ['article'],
@@ -215,11 +215,27 @@
           teaser: fieldTypes.Text
         }
       });
+      //uploaded Image:TODO
     }
     
     //setup the initial content types
     setupPrimativeContentTypes();
-  
+    
+    /////////////////////////////////////////////////////
+    //           setup Routes
+    /////////////////////////////////////////////////////
+    this.setupExpressJSRoutes = function(server){
+      //TODO: implement applying routes
+      //main page loader route
+      
+      //main admin page loader route
+      
+      //user login route
+      
+      //admin create new item route
+      
+      //admin update existing item route 
+    }
     /////////////////////////////////////////////////////
     //           utils
     ////////////////////////////////////////////////////  
