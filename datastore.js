@@ -19,11 +19,16 @@
     mongoose.model('NodeCMSContentGraph', {
         properties: ['slug', 'template', 'parentid', 'contentid', 'contenttype'],
         indexes: ['slug', 'contentid', 'parentid', 'contenttype'],
+        methods : {
+          getChildren: function(callback){
+            NodeCMSContentGraph.find({ parentid: this._id }).all(callback);
+          }
+        }
     });
     var NodeCMSContentGraph = db.model('NodeCMSContentGraph');
     //user model
     mongoose.model('_User', {
-        properties: ['username', 'password', 'firstname', 'lastname', 'email' ],
+        properties: ['username', 'password', 'firstname', 'lastname', 'email', 'permissions' ],
         indexes: ['username', 'email'],
         methods: {
           getPassKey: function(){
@@ -44,9 +49,12 @@
           password: function(v){
             return crypto.createHash('sha1').update(v).digest('hex');
           }
-        }
-    })
-  
+        },
+        
+    });
+    var User = db.model('_User');
+    createInitialAdminIfDoesntExist();
+    
     /////////////////////////////////////////////////////
     //           content creation
     ////////////////////////////////////////////////////
@@ -147,6 +155,41 @@
         iter(root);  
       });
     }
+    
+    function getUserByUsername(username, callback){
+      User.find({ username: username }).first(function(result){
+        callback(result);
+      });
+    }
+    
+    function getUserByEmail(email, callback){
+      User.find({ email: email }).first(function(result){
+        callback(result);
+      });
+    }
+    
+    this.authenticateByUsername = function(username, password, callback){
+      getUserByUsername(username, function(user){
+        if(user){
+          callback(user.validatePassword(password));
+        }
+        else{
+          callback(false);
+        }
+      });
+    }
+    
+    this.authenticateByEmail = function(email, password, callback){
+      getUserByEmail(email, function(user){
+        if(user){
+          callback(user.validatePassword(password));
+        }
+        else{
+          callback(false);
+        }
+      });
+    }
+    
 
     /////////////////////////////////////////////////////
     //           primatives
@@ -160,13 +203,6 @@
       //folder
       that.createContentType('Folder', {
         properties: ['article'],
-        methods : {
-          getChildren: function(callback){
-            //TODO: Actually implement this
-            console.log('getChildren is not implemented yet');
-            callback([]);
-          }
-        },
         cast : {
           article: fieldTypes.Text
         }
@@ -203,6 +239,24 @@
         });
       });
       return toreturn
+    }
+    
+    function createInitialAdminIfDoesntExist(){
+      if(settings.InitialUser){
+        getUserByUsername(settings.InitialUser.username, function(user){
+          if(!user){
+            //the Initial Admin User does not exist, so we should create it
+            var u = new User();
+            u.username = settings.InitialUser.username;
+            u.password = settings.InitialUser.password;
+            u.firstname = settings.InitialUser.firstname;
+            u.lastname = settings.InitialUser.lastname;
+            u.email = settings.InitialUser.email;
+            u.permissions = ['admin'];
+            u.save(function(){console.log('Created Initial Admin User: ' + u.username);});
+          }
+        });
+      }
     }
     
     

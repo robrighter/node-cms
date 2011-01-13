@@ -17,10 +17,18 @@ try{
     }
     else{
       //we got a root item
-      console.log(root.content.title);
-      console.log(root.content.article);
-      root.content.getChildren(function(result){
+      //console.log(root.content.title);
+      //console.log(root.content.article);
+      root.location.getChildren(function(result){
+        console.log('FOUND THE FOLLOWING CHILDREN OF THE ROOT ITEM:');
         console.log(sys.inspect(result));
+      });
+      var pg = ds.makeContent('Page');
+      pg.title = "The very first Subpage";
+      pg.hidden_from_navigation = true;
+      pg.article = 'This is the content of the firt pages article';
+      ds.addContentToSitemap(pg, root.location._id, 'homepagetemplate.ejs', function(result){
+        console.log('...Added new page: ' + pg.title);
       });
 
     }
