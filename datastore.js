@@ -221,21 +221,7 @@
     //setup the initial content types
     setupPrimativeContentTypes();
     
-    /////////////////////////////////////////////////////
-    //           setup Routes
-    /////////////////////////////////////////////////////
-    this.setupExpressJSRoutes = function(server){
-      //TODO: implement applying routes
-      //main page loader route
-      
-      //main admin page loader route
-      
-      //user login route
-      
-      //admin create new item route
-      
-      //admin update existing item route 
-    }
+    
     /////////////////////////////////////////////////////
     //           utils
     ////////////////////////////////////////////////////  
