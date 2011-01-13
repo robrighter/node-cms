@@ -11,12 +11,41 @@
     var that = this;
     //setup the db
     var db = mongoose.connect(settings.MongoConnectionString); //TODO: Get this out into a settings file
-    //setup the contentgraph model
+    
+    //////////////////////////////////////////////////
+    //            System Models
+    /////////////////////////////////////////////////
+    //contentgraph model
     mongoose.model('NodeCMSContentGraph', {
         properties: ['slug', 'template', 'parentid', 'contentid', 'contenttype'],
-        indexes: ['id', 'slug', 'contentid', 'parentid', 'contenttype'],
+        indexes: ['slug', 'contentid', 'parentid', 'contenttype'],
     });
     var NodeCMSContentGraph = db.model('NodeCMSContentGraph');
+    //user model
+    mongoose.model('_User', {
+        properties: ['username', 'password', 'firstname', 'lastname', 'email' ],
+        indexes: ['username', 'email'],
+        methods: {
+          getPassKey: function(){
+            return crypto.createHash('sha1').update(this.username+this.password+settings.SecretKey).digest('hex');
+          },
+          validatePassword: function(thepassword){
+            if(crypto.createHash('sha1').update(thepassword).digest('hex') == this.password){
+              //the password is correct, send back a key
+              return this.getPassKey();
+            }
+            else{
+              //the password was incorrect
+              return false;
+            }
+          }
+        },
+        setters: {
+          password: function(v){
+            return crypto.createHash('sha1').update(v).digest('hex');
+          }
+        }
+    })
   
     /////////////////////////////////////////////////////
     //           content creation
