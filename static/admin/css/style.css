@@ -211,7 +211,7 @@ button {  width: auto; overflow: visible; }
   background: #cccccc;
   padding: 22px;
   opacity: 0.85;
-  border: 5px solid #767676;
+  border: 10px solid rgba(255,255,255,0.7);
   overflow-y: scroll;
   -moz-box-shadow: 5px 5px 5px #ccc;
   -webkit-box-shadow: 5px 5px 5px #ccc;
@@ -235,7 +235,7 @@ button {  width: auto; overflow: visible; }
 
 .inputgroup .label{
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;
   margin-bottom: 3px;
 }
 
@@ -245,10 +245,11 @@ button {  width: auto; overflow: visible; }
   border: 2px solid #8B8B8B;
   padding: 6px;
   border-radius: 5px;
+  outline: none;
 }
 
-.inputgroup .prop:hover {
-  
+.inputgroup .prop:hover, .inputgroup .prop:focus  {
+  border-color: #3176B2;
 }
 
 input.prop {
@@ -277,21 +278,21 @@ textarea.prop {
 
 #container #closer{
   position: fixed;
-  right: 55px;
+  right: 60px;
   top: 50px;
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: bold;
-  background-color: #1C1C1C;
-  color: #FFF;
+  width: 17px;
+  height: 17px;
+  font-size: 12px;
+  font-weight: normal;
   text-align: center;
   padding-top: 4px;
+  border: 1px solid #757575;
+  border-radius: 4px;
+  
 }
 
 #container #closer:hover {
-  background-color: #124C8B;
+  background-color: #FFF;
   cursor: pointer;
 }
 
