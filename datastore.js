@@ -113,9 +113,13 @@
       if(result){
         //found it, now lets lookup the conntent item
         var contentmodel = db.model(result.contenttype);
-        contentmodel.find({ _id: result.contentid }).first(function(contentitem){
-          callback({location: result, content: contentitem});
-        });
+        console.log('Found result: ' + result.contentid);
+        setTimeout(function(){
+          contentmodel.find({ _id: result.contentid }).first(function(contentitem){
+            console.log(sys.inspect({location: result, content: contentitem}));
+            callback({location: result, content: contentitem});
+          });
+        }, 100)
         
       }
       else{
@@ -133,27 +137,32 @@
     this.getContentItemForPath = function(path, callback){
       //turn the path into an array and strip out all of the ''s
       path = path.split('/').filter(function(item){return item!==''});
+      console.log('Looking for the this path in the database: ' + sys.inspect(path));
       var i = 0;
       //recursive function that goes until we get to the end of the page
       var iter = function(cursor){
+        console.log('here ? (path.length) = '+ (path.length) + " i="+i);
         if(!cursor){
           //we got nothing, this is a 404
-          throw "404";
+          console.log('here 2');
+          callback(false);
         }
-        else if(i == (path.length-1)){
+        else if(i == (path.length)){
+          console.log('here 3');
           //we found it, lets return it in the callback
+          console.log('ok I think we found it:');
+          console.log(sys.inspect(cursor));
           processFoundResult(cursor,callback);
         }
         else{
+          console.log('here 4');
           //still going keep iterating
           i++;
           NodeCMSContentGraph.find({ parentid: cursor.parentid }).first(iter);
         }
       };
-      //alright lets kick it off
-      that.getRoot(function(root){
-        iter(root);  
-      });
+      //alright lets kick it off by grabing the root item (the one with a parentid of 0)
+      NodeCMSContentGraph.find({ parentid: 0 }).first(iter);
     }
     
     function getUserByUsername(username, callback){
