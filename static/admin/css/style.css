@@ -221,12 +221,19 @@ button {  width: auto; overflow: visible; }
 #container h1{
   font-family: 'Helvetica', arial, serif;
   font-size: 35px;
+  text-shadow: 0px 2px 0px #e5e5ee;
+  filter: dropshadow(color=#e5e5ee,offX=0,offY=1);
+  letter-spacing: -1px;
 }
 
 #container h2{
-  font-size: 20;
-  font-style: italic;
-  color: #1F1F1F;
+  font-size: 17px;
+  font-weight: bold;
+  color: #4183C4;
+  text-shadow: 0px 1px 0px #e5e5ee;
+  filter: dropshadow(color=#e5e5ee,offX=0,offY=1);
+  letter-spacing: -1px;
+  margin-top: 15px;
 }
 
 .inputgroup {
@@ -237,6 +244,8 @@ button {  width: auto; overflow: visible; }
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 3px;
+  text-shadow: 0px 1px 0px #e5e5ee;
+  letter-spacing: -1px;
 }
 
 .inputgroup .prop {
@@ -288,7 +297,7 @@ textarea.prop {
   padding-top: 4px;
   border: 1px solid #757575;
   border-radius: 4px;
-  
+  text-shadow: 0px 2px 0px #e5e5ee;
 }
 
 #container #closer:hover {
@@ -307,6 +316,7 @@ textarea.prop {
   font-size: 15px;
   border: 2px solid #ccc;
   border-radius: 5px;
+  text-shadow: 0px 1px 0px #e5e5ee;
 }
 
 #container table tr{
