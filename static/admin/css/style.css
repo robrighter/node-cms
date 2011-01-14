@@ -204,12 +204,11 @@ button {  width: auto; overflow: visible; }
 
 #container { 
   position: absolute;
-  top: 20px;
-  right: 20px; 
-  bottom: 20px;
-  left: 20px;
+  top: 30px;
+  right: 30px; 
+  bottom: 30px;
+  left: 30px;
   background: #cccccc;
-  border-radius: 20px;
   padding: 22px;
   opacity: 0.85;
   border: 5px solid #767676;
@@ -236,15 +235,20 @@ button {  width: auto; overflow: visible; }
 
 .inputgroup .label{
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 3px;
 }
 
 .inputgroup .prop {
-  width: 400px;
+  width: 98%;
   background-color: #E6E7E7;
   border: 2px solid #8B8B8B;
-  padding: 5px;
+  padding: 6px;
+  border-radius: 5px;
+}
+
+.inputgroup .prop:hover {
+  
 }
 
 input.prop {
@@ -258,7 +262,8 @@ textarea.prop {
 }
 
 .cta {
-  margin-top: 7px;
+  margin-top: 15px;
+  float: right;
 }
 
 .break {
@@ -268,6 +273,30 @@ textarea.prop {
 #container table{
   width: 100%;
   margin-top: 7px;
+}
+
+#container #closer{
+  position: fixed;
+  right: 55px;
+  top: 50px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #1C1C1C;
+  color: #FFF;
+  text-align: center;
+  padding-top: 4px;
+}
+
+#container #closer:hover {
+  background-color: #124C8B;
+  cursor: pointer;
+}
+
+#container table{
+  border-radius: 3px;
 }
 
 #container table td{
@@ -280,27 +309,18 @@ textarea.prop {
 }
 
 #container table tr{
-  background-color: #EAEBEB;
-  
-  
+  background-color: #EAEBEB; 
 }
 
-#main{
-  
+#container table tr:hover {
+  background-color: #FFF;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+#login{
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 
 
