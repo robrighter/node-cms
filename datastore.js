@@ -141,6 +141,8 @@
       var i = 0;
       //recursive function that goes until we get to the end of the page
       var iter = function(cursor){
+        
+        console.log('Currently the cursor is at: ' + (cursor? cursor.slug : 'NOTHING') );
         console.log('here ? (path.length) = '+ (path.length) + " i="+i);
         if(!cursor){
           //we got nothing, this is a 404
@@ -157,8 +159,9 @@
         else{
           console.log('here 4');
           //still going keep iterating
-          i++;
-          NodeCMSContentGraph.find({ parentid: cursor.parentid }).first(iter);
+          var tofind = { parentid: cursor._id, slug: path[i++] };
+          console.log('Still not there, now we are looking for: ' + sys.inspect(tofind));
+          NodeCMSContentGraph.find(tofind).first(iter);
         }
       };
       //alright lets kick it off by grabing the root item (the one with a parentid of 0)

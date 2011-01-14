@@ -202,6 +202,101 @@ button {  width: auto; overflow: visible; }
  */
 
 
+#container { 
+  position: absolute;
+  top: 20px;
+  right: 20px; 
+  bottom: 20px;
+  left: 20px;
+  background: #cccccc;
+  border-radius: 20px;
+  padding: 22px;
+  opacity: 0.85;
+  border: 5px solid #767676;
+  overflow-y: scroll;
+  -moz-box-shadow: 5px 5px 5px #ccc;
+  -webkit-box-shadow: 5px 5px 5px #ccc;
+  box-shadow: 5px 5px 5px #ccc;
+}
+
+#container h1{
+  font-family: 'Helvetica', arial, serif;
+  font-size: 35px;
+}
+
+#container h2{
+  font-size: 20;
+  font-style: italic;
+  color: #1F1F1F;
+}
+
+.inputgroup {
+  margin-top: 20px;
+}
+
+.inputgroup .label{
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.inputgroup .prop {
+  width: 400px;
+  background-color: #E6E7E7;
+  border: 2px solid #8B8B8B;
+  padding: 5px;
+}
+
+input.prop {
+  height: 30px;
+  font-size: 20px;
+}
+
+textarea.prop {
+  height: 100px;
+  font-size: 20px;
+}
+
+.cta {
+  margin-top: 7px;
+}
+
+.break {
+  clear: both;
+}
+
+#container table{
+  width: 100%;
+  margin-top: 7px;
+}
+
+#container table td{
+  text-align: center;
+  padding: 7px;
+  margin: 4px;
+  font-size: 15px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+#container table tr{
+  background-color: #EAEBEB;
+  
+  
+}
+
+#main{
+  
+}
+
+
+
+
+
+
+
+
+
 
 
 
