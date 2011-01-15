@@ -66,7 +66,14 @@
           
           indexes: ['id'],
           
-          cast: (details.hasOwnProperty('cast')?details.cast:{}),
+          cast: mixin({
+            title: function(v){
+              return new (fieldTypes.Text)(v);
+            },
+            updated_at: function(v){
+              return new (fieldTypes.SingleDate)(v);
+            } 
+          },(details.hasOwnProperty('cast')?details.cast:{})),
           
           setters: (details.hasOwnProperty('setters')?details.setters:{}),
           
@@ -82,7 +89,6 @@
                   return properties.map(function(item){
                     return {
                       name: item,
-                      type: getObjectClass(thismodel[item]),
                       value: thismodel[item],
                     };
                   });
@@ -105,7 +111,7 @@
       content.save(function(result){
         //now save the content into the content graph
         var toadd = new NodeCMSContentGraph();
-        toadd.slug = slugify(content.title);
+        toadd.slug = slugify(content.title.value);
         toadd.parentid = parentid;
         toadd.template = template;
         toadd.contentid = content._id;
@@ -229,7 +235,16 @@
         this.markdownValue = value;
         this.htmlValue = 'not yet implemented';
         this.type = this.constructor.name;
+      },
+      SingleDate: function SingleDate(value){
+        this.value = value;
+        this.type = this.constructor.name;
       }
+      //TODO: Image,
+      //TODO: File,
+      //TODO: Select,
+      //TODO: Boolean
+      
     }
   
     function setupPrimativeContentTypes(){
@@ -281,18 +296,6 @@
         });
       });
       return toreturn
-    }
-    
-    function getObjectClass(obj) {
-        if (obj && obj.constructor && obj.constructor.toString) {
-            var arr = obj.constructor.toString().match(
-                /function\s*(\w+)/);
-
-            if (arr && arr.length == 2) {
-                return arr[1];
-            }
-        }
-        return undefined;
     }
     
     function createInitialAdminIfDoesntExist(){
