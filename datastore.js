@@ -2,10 +2,9 @@
   /////////////////////////////////////////////////////
   //           inital setup
   ////////////////////////////////////////////////////
-  exports.Datastore = function(){
+  exports.Datastore = function(settings){
     require(__dirname + "/lib/setup").ext( __dirname + "/lib"); 
     var mongoose = require('mongoose/mongoose').Mongoose;
-    var settings = require('./cms-settings').settings;
     var crypto = require('crypto');
     var sys = require('sys');
     var that = this;
