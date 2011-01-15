@@ -73,7 +73,8 @@
                 save: function(fn){
                     this.updated_at = new Date();
                     this.__super__(fn);
-                }
+                },
+                getProperties: function(){return properties;}
             },
             (details.hasOwnProperty('methods')?details.methods:{}))
       });

@@ -13,17 +13,19 @@
   <div id="container">
 	  <div id='closer'>X</div>
     <div id="main">
-       <h1><%= title %></h1>
+       <h1><%= content.title %></h1>
 	     <h2>Folder</h2>
 	 		 <div class='section'>
 		 	 		<form method="post" action="">
+			      <% [1,2,3,4,5,6,7,8,9].forEach(function(item){ %>
 			      <div class='inputgroup'>
 							<div class='label'>Title</div>
 							<input class="prop" type='text' name='thename' value='<%= title %>'/>
 						</div>
+						<%});%>
 						<div class='inputgroup'>
 							<div class='label'>Teaser</div>
-							<textarea class="prop" name='thename' /></textarea>
+							<textarea class="prop" name='thename' /><%= content.teaser%></textarea>
 						</div>
 						<div class='inputgroup'>
 							<div class='label'>Photo</div>
@@ -31,7 +33,7 @@
 						</div>
 						<div class='inputgroup'>
 							<div class='label'>Article</div>
-							<textarea class="prop" name='thename' value='<%= article %>'/></textarea>
+							<textarea class="prop" name='thename' /><%= content.article %></textarea>
 						</div>
 						<input class="cta" type="submit" value="Save" />
 					</form>

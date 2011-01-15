@@ -32,13 +32,12 @@
       //main admin page loader route
       server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
         findContentOrPassToNext(req.params[0], next, function(result){
-          res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
-            layout: false,
-            locals : {
-              adminassets: settings.AdminAssetsWebPath,
-              title: result.content.title,
-              article: result.content.article
-            }
+          prepareModelResultForAdmin(result, function(locals){
+            locals.adminassets = settings.AdminAssetsWebPath;
+            res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
+              layout: false,
+              locals : locals
+            });
           });
         });
       });
@@ -48,6 +47,38 @@
       //admin create new item route
 
       //admin update existing item route 
+    }
+    
+    function prepareModelResultForAdmin(result, callback){
+      var toreturn = {};
+      toreturn.content = result.content;
+      toreturn.location = result.location;
+      //get children from location
+      result.location.getChildren(function(children){
+        toreturn.children = children;
+        //run the preRenderingTasks if the model creator made them
+        if(result.content.hasOwnProperty('preRenderingTasks')){
+          result.content.preRenderingTasks(function(taskresults){
+            toreturn.prerendertasks = taskresults;
+            //setup form inputs
+            callback(prepareAdminInputs(toreturn,result.content.getProperties()));
+          });
+        }
+        else{
+          callback(toreturn);
+        }
+      });
+    }
+    
+    function prepareModelResultForFrontEnd(result,callback){
+      //grab navigation lists
+      
+      //preRenderingTasks
+    }
+    
+    function prepareAdminInputs(info, contentproperties){
+      info.prerendertasks = [];
+      return info;
     }
 
 
