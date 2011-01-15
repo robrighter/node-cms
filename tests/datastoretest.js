@@ -1,6 +1,7 @@
 var Datastore = require('../datastore').Datastore;
 var sys = require('sys');
-var ds = new Datastore();
+var settings = require('../cms-settings').settings;
+var ds = new Datastore(settings);
 //add content
 try{
   ds.getRoot(function(root){

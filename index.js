@@ -65,7 +65,7 @@
           });
         }
         else{
-          callback(toreturn);
+          callback(prepareAdminInputs(toreturn,result.content.getProperties()));
         }
       });
     }
@@ -77,7 +77,12 @@
     }
     
     function prepareAdminInputs(info, contentproperties){
-      info.prerendertasks = [];
+      console.log('--------------------------------------------------');
+      console.log('READY TO PREPARE ADMINS:');
+      console.log(sys.inspect(info));
+      console.log('The Properties for this model are:');
+      console.log(sys.inspect(info.content.getProperties()));
+      //prepare the input list
       return info;
     }
 

@@ -16,7 +16,7 @@
     /////////////////////////////////////////////////
     //contentgraph model
     mongoose.model('NodeCMSContentGraph', {
-        properties: ['slug', 'template', 'parentid', 'contentid', 'contenttype'],
+        properties: ['slug', 'template', 'parentid', 'contentid', 'contenttype', 'hidden_from_navigation'],
         indexes: ['slug', 'contentid', 'parentid', 'contenttype'],
         methods : {
           getChildren: function(callback){
@@ -59,7 +59,7 @@
     ////////////////////////////////////////////////////
     
     this.createContentType = function(name, details){
-      var properties = ['updated_at', 'title', 'hidden_from_navigation'];
+      var properties = ['updated_at', 'title'];
       properties = properties.concat( (details.hasOwnProperty('properties')?details.properties:[]) );
       mongoose.model(name, {
           properties: properties,
@@ -68,13 +68,26 @@
           
           cast: (details.hasOwnProperty('cast')?details.cast:{}),
           
+          setters: (details.hasOwnProperty('setters')?details.setters:{}),
+          
           methods: mixin(
             { 
                 save: function(fn){
                     this.updated_at = new Date();
                     this.__super__(fn);
                 },
-                getProperties: function(){return properties;}
+                getProperties: function(){
+                  //return the all of the properties and thier types
+                  var thismodel = this;
+                  return properties.map(function(item){
+                    return {
+                      name: item,
+                      type: getObjectClass(thismodel[item]),
+                      value: thismodel[item],
+                    };
+                  });
+      
+                }
             },
             (details.hasOwnProperty('methods')?details.methods:{}))
       });
@@ -206,25 +219,40 @@
     /////////////////////////////////////////////////////
     //           primatives
     ////////////////////////////////////////////////////
+    
     var fieldTypes = {
-      Text: String,
-      RichText: String
+      Text: function Text(value){
+        this.value = value;
+        this.type = this.constructor.name;
+      },
+      RichText: function RichText(value){
+        this.markdownValue = value;
+        this.htmlValue = 'not yet implemented';
+        this.type = this.constructor.name;
+      }
     }
   
     function setupPrimativeContentTypes(){
       //folder
       that.createContentType('Folder', {
         properties: ['article'],
-        cast : {
-          article: fieldTypes.Text
+        setters:{
+          article: function(v){
+            return new (fieldTypes.RichText)(v);
+          }
         }
       });
+      
       //simple page
       that.createContentType('Page', {
         properties: ['article','teaser'],
-        cast: {
-          article: fieldTypes.RichText,
-          teaser: fieldTypes.Text
+        setters:{
+          article: function(v){
+            return new (fieldTypes.RichText)(v);
+          },
+          teaser: function(v){
+            return new (fieldTypes.Text)(v);
+          }
         }
       });
       //uploaded Image:TODO
@@ -253,6 +281,18 @@
         });
       });
       return toreturn
+    }
+    
+    function getObjectClass(obj) {
+        if (obj && obj.constructor && obj.constructor.toString) {
+            var arr = obj.constructor.toString().match(
+                /function\s*(\w+)/);
+
+            if (arr && arr.length == 2) {
+                return arr[1];
+            }
+        }
+        return undefined;
     }
     
     function createInitialAdminIfDoesntExist(){
