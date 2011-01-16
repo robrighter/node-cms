@@ -58,7 +58,7 @@
     //           content creation
     ////////////////////////////////////////////////////
     
-    this.createContentType = function(name, details){
+    this.createContentType = function(name, fields, methods, preRenderingTasks){//////TODO !!!!!!!!!!!!!!
       var properties = ['updated_at', 'title'];
       properties = properties.concat( (details.hasOwnProperty('properties')?details.properties:[]) );
       mongoose.model(name, {
@@ -67,12 +67,8 @@
           indexes: ['id'],
           
           cast: mixin({
-            title: function(v){
-              return new (fieldTypes.Text)(v);
-            },
-            updated_at: function(v){
-              return new (fieldTypes.SingleDate)(v);
-            } 
+            title: fieldTypes.Text(),
+            updated_at: fieldTypes.SingleDate() 
           },(details.hasOwnProperty('cast')?details.cast:{})),
           
           setters: (details.hasOwnProperty('setters')?details.setters:{}),
@@ -227,24 +223,32 @@
     ////////////////////////////////////////////////////
     
     var fieldTypes = {
-      Text: function Text(value){
-        this.value = value;
-        this.type = this.constructor.name;
+      Text: function(v){ 
+        function Text(value){
+          this.value = value;
+          this.type = this.constructor.name;
+        }
+        return function(v){ return new Text(v); };
       },
-      RichText: function RichText(value){
-        this.markdownValue = value;
-        this.htmlValue = 'not yet implemented';
-        this.type = this.constructor.name;
+      RichText: function(v){ 
+        function RichText(value){
+          this.markdownValue = value;
+          this.htmlValue = 'not yet implemented';
+          this.type = this.constructor.name;
+        }
+        return function(v){ return new RichText(v); };
       },
-      SingleDate: function SingleDate(value){
-        this.value = value;
-        this.type = this.constructor.name;
-      }
+      SingleDate:  function(v){ 
+        function SingleDate(value){
+          this.value = value;
+          this.type = this.constructor.name;
+        }
+        return function(v){ return new SingleDate(v); };
+      } 
       //TODO: Image,
       //TODO: File,
       //TODO: Select,
-      //TODO: Boolean
-      
+      //TODO: Boolean  
     }
   
     function setupPrimativeContentTypes(){
@@ -252,9 +256,7 @@
       that.createContentType('Folder', {
         properties: ['article'],
         setters:{
-          article: function(v){
-            return new (fieldTypes.RichText)(v);
-          }
+          article: fieldTypes.RichText()
         }
       });
       
@@ -262,12 +264,8 @@
       that.createContentType('Page', {
         properties: ['article','teaser'],
         setters:{
-          article: function(v){
-            return new (fieldTypes.RichText)(v);
-          },
-          teaser: function(v){
-            return new (fieldTypes.Text)(v);
-          }
+          article: fieldTypes.RichText(),
+          teaser: fieldTypes.Text() 
         }
       });
       //uploaded Image:TODO
