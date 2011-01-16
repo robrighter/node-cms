@@ -58,41 +58,31 @@
     //           content creation
     ////////////////////////////////////////////////////
     
-    this.createContentType = function(name, fields, methods, preRenderingTasks){//////TODO !!!!!!!!!!!!!!
-      var properties = ['updated_at', 'title'];
-      properties = properties.concat( (details.hasOwnProperty('properties')?details.properties:[]) );
+    this.createContentType = function(name, fields, methods, preRenderingTasks){
+      //add the universal fields
+      fields.updated_at = fieldTypes.SingleDate();
+      fields.title = fieldTypes.Text();
+      var properties = Object.keys(fields);
+      
+      //setup the model
       mongoose.model(name, {
           properties: properties,
-          
           indexes: ['id'],
-          
-          cast: mixin({
-            title: fieldTypes.Text(),
-            updated_at: fieldTypes.SingleDate() 
-          },(details.hasOwnProperty('cast')?details.cast:{})),
-          
-          setters: (details.hasOwnProperty('setters')?details.setters:{}),
-          
+          setters: fields,
           methods: mixin(
-            { 
-                save: function(fn){
-                    this.updated_at = new Date();
-                    this.__super__(fn);
-                },
-                getProperties: function(){
-                  //return the all of the properties and thier types
-                  var thismodel = this;
-                  return properties.map(function(item){
-                    return {
-                      name: item,
-                      value: thismodel[item],
-                    };
-                  });
-      
-                }
+          { 
+            save: function(fn){
+                this.updated_at = new Date();
+                this.__super__(fn);
             },
-            (details.hasOwnProperty('methods')?details.methods:{}))
-      });
+            getProperties: function(){
+              var thismodel = this;
+              return properties.map(function(item){
+                return { name: item, value: thismodel[item]};
+              });
+            },
+            preRenderingTasks: preRenderingTasks
+          },methods)});
     }
   
     this.makeContent = function(type){
@@ -251,28 +241,21 @@
       //TODO: Boolean  
     }
   
-    function setupPrimativeContentTypes(){
+    function setupInitialContentTypes(){
       //folder
       that.createContentType('Folder', {
-        properties: ['article'],
-        setters:{
-          article: fieldTypes.RichText()
-        }
+        article: fieldTypes.RichText()
       });
       
       //simple page
       that.createContentType('Page', {
-        properties: ['article','teaser'],
-        setters:{
           article: fieldTypes.RichText(),
           teaser: fieldTypes.Text() 
-        }
       });
-      //uploaded Image:TODO
     }
     
     //setup the initial content types
-    setupPrimativeContentTypes();
+    setupInitialContentTypes();
     
     
     /////////////////////////////////////////////////////
@@ -289,9 +272,11 @@
       var toreturn = {};
       var objs = arguments;
       Object.keys(objs).forEach(function(objkey){
-        Object.keys(objs[objkey]).forEach(function(item){
-          toreturn[item] = objs[objkey][item];
-        });
+        if(objs[objkey]){
+          Object.keys(objs[objkey]).forEach(function(item){
+            toreturn[item] = objs[objkey][item];
+          });
+        }
       });
       return toreturn
     }

@@ -34,9 +34,10 @@
         findContentOrPassToNext(req.params[0], next, function(result){
           prepareModelResultForAdmin(result, function(locals){
             locals.adminassets = settings.AdminAssetsWebPath;
+            locals.sys = sys;
             res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
               layout: false,
-              locals : locals
+              locals : locals,
             });
           });
         });
@@ -61,11 +62,11 @@
           result.content.preRenderingTasks(function(taskresults){
             toreturn.prerendertasks = taskresults;
             //setup form inputs
-            callback(prepareAdminInputs(toreturn,result.content.getProperties()));
+            callback(toreturn);
           });
         }
         else{
-          callback(prepareAdminInputs(toreturn,result.content.getProperties()));
+          callback(toreturn);
         }
       });
     }
@@ -76,15 +77,15 @@
       //preRenderingTasks
     }
     
-    function prepareAdminInputs(info, contentproperties){
-      console.log('--------------------------------------------------');
-      console.log('READY TO PREPARE ADMINS:');
-      console.log(sys.inspect(info));
-      console.log('The Properties for this model are:');
-      console.log(sys.inspect(info.content.getProperties()));
-      //prepare the input list
-      return info;
-    }
+    // function prepareAdminInputs(info, contentproperties){
+    //       console.log('--------------------------------------------------');
+    //       console.log('READY TO PREPARE ADMINS:');
+    //       console.log(sys.inspect(info));
+    //       console.log('The Properties for this model are:');
+    //       console.log(sys.inspect(info.content.getProperties()));
+    //       //prepare the input list
+    //       return info;
+    //     }
 
 
     function findContentOrPassToNext(path, next, callback){
