@@ -14,7 +14,7 @@
 	  <div id='closer'>X</div>
     <div id="main">
        <h1><%= content.title.value %></h1>
-	     <h2>Folder</h2>
+	     <h2><%= location.contenttype %></h2>
 	 		 <div class='section'>
 					<pre>
 						Properties:
@@ -27,22 +27,61 @@
 						<%= sys.inspect(children)%>
 					</pre>
 		 	 		<form method="post" action="">
-			      <div class='inputgroup'>
-							<div class='label'>Title</div>
-							<input class="prop" type='text' name='thename' value='<%= content.title.value %>'/>
-						</div>
-						<div class='inputgroup'>
-							<div class='label'>Teaser</div>
-							<textarea class="prop" name='thename' /></textarea>
-						</div>
-						<div class='inputgroup'>
-							<div class='label'>Photo</div>
-							<input class="prop" type='file' name='thename' />
-						</div>
-						<div class='inputgroup'>
-							<div class='label'>Article</div>
-							<textarea class="prop" name='thename' /><%= content.article.value %></textarea>
-						</div>
+						
+						<%
+							content.getProperties().forEach(function(item){
+								//Text,RichText,SingleDate,Image,File,Select,Boolean
+								if(item.value.type == 'Text'){
+								%>
+								  <div class='inputgroup'>
+									  <div class='label'><%=item.name%></div>
+									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.value %>'/>
+								  </div>
+								<%	
+								}
+								else if(item.value.type == 'RichText'){
+								%>
+									<div class='inputgroup'>
+										<div class='label'><%=item.name%></div>
+										<textarea class="prop" name='<%=item.name%>' /><%= item.value.markdownValue %></textarea>
+									</div>
+								<%	
+								}
+								else if(item.value.type == 'SingleDate'){
+								%>
+									<div class='inputgroup'>
+									  <div class='label'><%=item.name%></div>
+									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.value %>'/>
+								  </div>
+								<%	
+								}
+								else if(item.value.type == 'Boolean'){
+								%>
+									
+								<%	
+								}
+								else if(item.value.type == 'Select'){
+								%>
+								
+								<%	
+								}
+								else if(item.value.type == 'Image'){
+								%>
+									<div class='inputgroup'>
+										<div class='label'><%=item.name%></div>
+										<input class="prop" type='file' name='<%=item.name%>' />
+										<img src="<%=item.value.url%>" />
+									</div>
+								<%	
+								}
+								else if(item.value.type == 'File'){
+								%>
+								
+								<%	
+								}
+							});
+						%>
+			
 						<input class="cta" type="submit" value="Save" />
 					</form>
 			</div>
@@ -51,6 +90,13 @@
 			<div class='section'>
 				<h2>Content under this Folder</h2>
 				<table>
+					<%
+					children.forEach(function(item){
+					%>
+					<tr><td><a href="<%=item.slug%>"><%=item.slug%></a></td><td><%=item.contenttype%></td><td>Dec 2, 2010</td><td><a href="<%=item.slug%>">edit</a></td><td><a href="">delete</a></td></tr>	
+					<%
+					});
+					%>
 					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
 					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
 					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
