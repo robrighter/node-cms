@@ -13,8 +13,8 @@
   <div id="container">
 	  <div id='closer'>X</div>
     <div id="main">
-       <h1><%= content.title.value %></h1>
-	     <h2><%= location.contenttype %></h2>
+       <h1><%= content.title.text %></h1>
+	     <h2><%= location.contenttype %></h2> <em>Last Updated: <%= content.updated_at.date %></em>
 	 		 <div class='section'>
 					<pre>
 						Properties:
@@ -31,18 +31,22 @@
 						<%
 							content.getProperties().forEach(function(item){
 								//Text,RichText,SingleDate,Image,File,Select,Boolean
+								if(item.value.uneditable){
+									//this item is flagged to be ignored
+									return
+								}
 								if(item.value.type == 'Text'){
 								%>
 								  <div class='inputgroup'>
-									  <div class='label'><%=item.name%></div>
-									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.value %>'/>
+									  <div class='label'><%=item.value.adminLabel%></div>
+									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.text %>'/>
 								  </div>
 								<%	
 								}
 								else if(item.value.type == 'RichText'){
 								%>
 									<div class='inputgroup'>
-										<div class='label'><%=item.name%></div>
+										<div class='label'><%=item.value.adminLabel%></div>
 										<textarea class="prop" name='<%=item.name%>' /><%= item.value.markdownValue %></textarea>
 									</div>
 								<%	
@@ -50,8 +54,8 @@
 								else if(item.value.type == 'SingleDate'){
 								%>
 									<div class='inputgroup'>
-									  <div class='label'><%=item.name%></div>
-									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.value %>'/>
+									  <div class='label'><%=item.value.adminLabel%></div>
+									  <input class="prop" type='text' name='<%=item.name%>' value='<%= item.value.date %>'/>
 								  </div>
 								<%	
 								}
@@ -68,7 +72,7 @@
 								else if(item.value.type == 'Image'){
 								%>
 									<div class='inputgroup'>
-										<div class='label'><%=item.name%></div>
+										<div class='label'><%=item.value.adminLabel%></div>
 										<input class="prop" type='file' name='<%=item.name%>' />
 										<img src="<%=item.value.url%>" />
 									</div>

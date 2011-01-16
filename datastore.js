@@ -5,6 +5,7 @@
   exports.Datastore = function(settings){
     require(__dirname + "/lib/setup").ext( __dirname + "/lib"); 
     var mongoose = require('mongoose/mongoose').Mongoose;
+    var underscore = require('underscore')._;
     var crypto = require('crypto');
     var sys = require('sys');
     var that = this;
@@ -60,8 +61,8 @@
     
     this.createContentType = function(name, fields, methods, preRenderingTasks){
       //add the universal fields
-      fields.updated_at = fieldTypes.SingleDate();
-      fields.title = fieldTypes.Text();
+      fields.updated_at = fieldTypes.SingleDate("Last Updated",2,true);
+      fields.title = fieldTypes.Text("Title", 1);
       var properties = Object.keys(fields);
       
       //setup the model
@@ -77,9 +78,14 @@
             },
             getProperties: function(){
               var thismodel = this;
-              return properties.map(function(item){
+              return underscore.sortBy(properties.map(function(item){
+                if(thismodel[item] == null){
+                  thismodel[item] = '';
+                }
                 return { name: item, value: thismodel[item]};
-              });
+              }), function(item){
+                item.value.adminOrder;
+              }).reverse();
             },
             preRenderingTasks: preRenderingTasks
           },methods)});
@@ -97,7 +103,7 @@
       content.save(function(result){
         //now save the content into the content graph
         var toadd = new NodeCMSContentGraph();
-        toadd.slug = slugify(content.title.value);
+        toadd.slug = slugify(content.title.text);
         toadd.parentid = parentid;
         toadd.template = template;
         toadd.contentid = content._id;
@@ -212,24 +218,33 @@
     //           primatives
     ////////////////////////////////////////////////////
     var fieldTypes = {
-      Text: function(v){ 
+      Text: function(adminlabel, adminorder, uneditable){ 
         function Text(value){
-          this.value = value;
+          this.adminLabel = adminlabel;
+          this.adminOrder = adminorder;
+          this.text = value;
+          this.uneditable = uneditable;
           this.type = this.constructor.name;
         }
         return function(v){ return new Text(v); };
       },
-      RichText: function(v){ 
+      RichText: function(adminlabel, adminorder, uneditable){ 
         function RichText(value){
+          this.adminLabel = adminlabel;
+          this.adminOrder = adminorder;
           this.markdownValue = value;
+          this.uneditable = uneditable;
           this.htmlValue = 'not yet implemented';
           this.type = this.constructor.name;
         }
         return function(v){ return new RichText(v); };
       },
-      SingleDate:  function(v){ 
+      SingleDate:  function(adminlabel, adminorder, uneditable){ 
         function SingleDate(value){
-          this.value = value;
+          this.adminLabel = adminlabel;
+          this.adminOrder = adminorder;
+          this.uneditable = uneditable;
+          this.date = value;
           this.type = this.constructor.name;
         }
         return function(v){ return new SingleDate(v); };
@@ -243,13 +258,13 @@
     function setupInitialContentTypes(){
       //folder
       that.createContentType('Folder', {
-        article: fieldTypes.RichText()
+        article: fieldTypes.RichText("Article", 3)
       });
       
       //simple page
       that.createContentType('Page', {
-          article: fieldTypes.RichText(),
-          teaser: fieldTypes.Text() 
+          article: fieldTypes.RichText("Article", 4),
+          teaser: fieldTypes.Text("Summary", 3) 
       });
     }
     
