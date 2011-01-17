@@ -115,6 +115,24 @@
       });
       
     }
+
+    /////////////////////////////////////////////////////
+    //           content update
+    ////////////////////////////////////////////////////
+    this.updateContent = function(id, doc, callback){
+      var ContentModel = db.model(doc.content.contenttype);
+      ContentModel.update(doc.content.id, id,doc.content,function(result){
+        //now updated the graph item too
+        NodeCMSContentGraph,update(doc.location.id, doc.location, function(result){
+          callback({status: 'ok'});
+        });
+        //['slug', 'template', 'parentid', 'contentid', 'contenttype', 'hidden_from_navigation'],NodeCMSContentGraph
+      });
+    };
+
+    /////////////////////////////////////////////////////
+    //           content Deletion
+    ////////////////////////////////////////////////////
   
     /////////////////////////////////////////////////////
     //           queries
@@ -252,7 +270,8 @@
       //TODO: Image,
       //TODO: File,
       //TODO: Select,
-      //TODO: Boolean  
+      //TODO: Boolean
+      //TODO: DateRange  
     }
   
     function setupInitialContentTypes(){

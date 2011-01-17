@@ -3,10 +3,20 @@
     require(__dirname + "/lib/setup").ext( __dirname + "/lib");
     var Datastore = require('./datastore').Datastore;
     var sys = require('sys');
+    var fs = require('fs');
+    console.log('fs = ' + sys.inspect(fs));
     var ds = new Datastore(settings);
     var form = require('connect-form');
-
     this.content = ds;
+    
+    //grab the list of templates:
+    var frontEndTemplates = [];
+    fs.readdir(settings.FrontEndViews, function(err, files){
+      if(!err){
+        frontEndTemplates = files;
+        console.log('Got the template list: ' + sys.inspect(frontEndTemplates));
+      }
+    });
 
     /////////////////////////////////////////////////////
     //           setup Routes
@@ -28,7 +38,13 @@
           });
         });
       });
-
+      
+      //REST Resources
+      server.put("/_content", function(req,res,next){
+        console.log(sys.inspect(req.body));
+        return res.send({status: 'Not Implemented'});
+      });
+      
       //main admin page loader route
       server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
         findContentOrPassToNext(req.params[0], next, function(result){
@@ -54,6 +70,7 @@
       var toreturn = {};
       toreturn.content = result.content;
       toreturn.location = result.location;
+      toreturn.templates = frontEndTemplates;
       //get children from location
       result.location.getChildren(function(children){
         toreturn.children = children;
@@ -100,6 +117,8 @@
       });
     }
   }
+  
+  
   
   
 })();

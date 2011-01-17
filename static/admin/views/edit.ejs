@@ -16,7 +16,7 @@
        <h1><%= content.title.text %></h1>
 	     <h2><%= location.contenttype %></h2> <em>Last Updated: <%= content.updated_at.date %></em>
 	 		 <div class='section'>
-					<pre>
+					<!-- ><pre>
 						Properties:
 						<%= sys.inspect(content.getProperties()) %>
 						
@@ -25,8 +25,8 @@
 						
 						Children
 						<%= sys.inspect(children)%>
-					</pre>
-		 	 		<form method="post" action="">
+					</pre> -->
+		 	 		<form id='editor'>
 						
 						<%
 							content.getProperties().forEach(function(item){
@@ -86,7 +86,18 @@
 							});
 						%>
 			
-						<input class="cta" type="submit" value="Save" />
+						<div class='inputgroup'>
+							<div class='label'>Advanced</div>
+							<p>Page layout: <select name='__template'>
+								<%
+									templates.forEach(function(item){
+										%><option><%= item %></option><%
+									});
+								%>
+							</select></p>
+							<p>Hide this page from navigation and other lists <input name='__hidden_from_navigation' type='checkbox' <%= (location.hidden_from_navigation) ? 'checked':''    %>></p>
+						</div>
+						<input type='submit' id="save" class="cta" value='Save' />
 					</form>
 			</div>
 			<div class='break'></div>
