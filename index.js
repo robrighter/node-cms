@@ -42,7 +42,26 @@
       //REST Resources
       server.put("/_content", function(req,res,next){
         console.log(sys.inspect(req.body));
-        return res.send({status: 'Not Implemented'});
+        
+        var doc = req.body;
+        if(!doc.hasOwnProperty('__hidden_from_navigation')){
+         doc['__hidden_from_navigation'] = 'false';
+        }
+        if(doc['__hidden_from_navigation'] == 'true'){
+          doc['__hidden_from_navigation'] = true;
+        }
+        else{
+          doc['__hidden_from_navigation'] = false;
+        }
+        res.send({status: false});
+        // ds.updateContent(id, doc, function(result){
+        //          if(result){
+        //            res.send({status: true});
+        //          }
+        //          else{
+        //            res.send({status: false})
+        //          }
+        //         });
       });
       
       //main admin page loader route
@@ -70,6 +89,8 @@
       var toreturn = {};
       toreturn.content = result.content;
       toreturn.location = result.location;
+      toreturn.id = JSON.stringify(result.location._id).replace('"', '');
+      console.log('DOC ID = ' + JSON.stringify(result.location._id));
       toreturn.templates = frontEndTemplates;
       //get children from location
       result.location.getChildren(function(children){

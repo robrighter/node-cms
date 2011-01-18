@@ -68,7 +68,7 @@
       //setup the model
       mongoose.model(name, {
           properties: properties,
-          indexes: ['id'],
+          indexes: ['slug'],
           setters: fields,
           methods: mixin(
           { 
@@ -103,7 +103,7 @@
       content.save(function(result){
         //now save the content into the content graph
         var toadd = new NodeCMSContentGraph();
-        toadd.slug = slugify(content.title.text);
+        toadd.slug = this.slugify(content.title.text);
         toadd.parentid = parentid;
         toadd.template = template;
         toadd.contentid = content._id;
@@ -294,7 +294,7 @@
     /////////////////////////////////////////////////////
     //           utils
     ////////////////////////////////////////////////////  
-    function slugify(text) {
+    this.slugify = function(text) {
       text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
       text = text.replace(/\s/gi, "-");
       return text.toLowerCase();

@@ -27,7 +27,7 @@
 						<%= sys.inspect(children)%>
 					</pre> -->
 		 	 		<form id='editor'>
-						
+						<input type='hidden' name='__id' value='<%= id %>'>
 						<%
 							content.getProperties().forEach(function(item){
 								//Text,RichText,SingleDate,Image,File,Select,Boolean
@@ -95,7 +95,8 @@
 									});
 								%>
 							</select></p>
-							<p>Hide this page from navigation and other lists <input name='__hidden_from_navigation' type='checkbox' <%= (location.hidden_from_navigation) ? 'checked':''    %>></p>
+							<p>Hide this page from navigation and other lists 
+								<input name='__hidden_from_navigation' type='checkbox' value='true' <%= (location.hidden_from_navigation) ? 'checked':''%> /></p>
 						</div>
 						<input type='submit' id="save" class="cta" value='Save' />
 					</form>
