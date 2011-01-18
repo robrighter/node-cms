@@ -330,9 +330,17 @@ textarea.prop {
   text-shadow: 0px 1px 0px #e5e5ee;
 }
 
-#container table tr{
+#container table tr, .subnavlist {
   background-color: #EAEBEB; 
 }
+
+.subnavlist {
+  background-color: #EAEBEB;
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px; 
+}
+
 
 #container table tr:hover {
   background-color: #FFF;
@@ -346,9 +354,8 @@ textarea.prop {
 
 .confirm{
   background-color: #b3d683;
-  border: 2px solid #4A8E20;
   color: #1F6006;
-  
+  border: 2px solid #4A8E20;
 }
 
 .warning{
@@ -397,15 +404,16 @@ button:active {
   float: left;
 }
 
-.orange {
-	color: #fef4e9;
-	border: solid 1px #da7c0c;
+.orange:hover {
+	
 	background: #f78d1d;
 	background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
 	background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
 	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a', endColorstr='#f47a20');
 }
-.orange:hover {
+.orange {
+  color: #fef4e9;
+	border: solid 1px #da7c0c;
 	background: #f47c20;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
 	background: -moz-linear-gradient(top,  #f88e11,  #f06015);
@@ -418,7 +426,23 @@ button:active {
 	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
 }
 
+.lastupdated {
+  font-size: 10px;
+}
 
+
+.advanced {
+  background-color: #B1B1B1;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #FFF;
+}
+
+.advanced p {
+  margin-top: 10px;
+}
 
 
 

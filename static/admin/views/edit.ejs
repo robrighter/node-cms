@@ -24,13 +24,20 @@
 						Location:
 						<%= sys.inspect(location)%>
 						
-						Children
-						<%= sys.inspect(children)%>
 					</pre> -->
 					<div class="message"></div>
-		 	 		<form id='editor'>
-						<input type='hidden' name='__id' value='<%= id %>'>
+		 	 		<form id='<%= (content.isNew ? 'makenew' : 'editor' )%>'>
 						<%
+							if(content.isNew){
+								%>
+								<input type='hidden' name='__parentid' value='<%= location.parentid %>'>
+								<input type='hidden' name='__contenttype' value='<%= location.contenttype %>'>
+								<%
+							}
+						  else{
+								%><input type='hidden' name='__id' value='<%= id %>'><%
+							}
+							
 							content.getProperties().forEach(function(item){
 								if(item.value.uneditable){
 									//this item is flagged to be ignored
@@ -89,23 +96,34 @@
 			
 						<div class='inputgroup'>
 							<div class='label'>Advanced</div>
-							<p>Page layout: <select name='__template'>
-								<%
-									templates.forEach(function(item){
-										%><option><%= item %></option><%
-									});
-								%>
-							</select></p>
-							<p>Hide this page from navigation and other lists 
-								<input name='__hidden_from_navigation' type='checkbox' value='true' <%= (location.hidden_from_navigation) ? 'checked':''%> /></p>
+							<div class="advanced">
+							   <p>Page layout: <select name='__template'>
+								  <%
+									  templates.forEach(function(item){
+									  	%><option <%=(item == location.template)? 'selected="yes"':'' %> ><%= item %></option><%
+								  	});
+							  	%>
+							    </select></p>
+							    <p>Hide this page from navigation and other lists: 
+								    <input name='__hidden_from_navigation' type='checkbox' value='true' <%= (location.hidden_from_navigation) ? 'checked':''%> /></p>
+						  </div>
 						</div>
 						<button type='submit' id="save" value='Save' class="right orange" >Save</button>
 					</form>
 			</div>
 			<div class='break'></div>
+			<%if(!content.isNew){%>
+				
 			<hr>
 			<div class='section'>
 				<h2>Content under this Folder</h2>
+				<%
+					if(children.length == 0){
+				%>
+							<div class="subnavlist">Currently there are no content items under this <%= location.contenttype %></div>
+				<%		
+					}
+				%>
 				<table>
 					<%
 					children.forEach(function(item){
@@ -118,8 +136,11 @@
 				<button type='submit' id="addcontent" class="right orange" >Add new content item under this <%= location.contenttype %></button>
 				<div class="break"></div>
 			</div>
+			<%}
+			//end if
+			%>
     </div>
-    <em>Last Updated: <%= content.updated_at.date %></em>
+    <em class='lastupdated'>Last Updated: <%= content.updated_at.date %></em>
   </div> <!--! end of #container -->
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>

@@ -4,7 +4,6 @@
     var Datastore = require('./datastore').Datastore;
     var sys = require('sys');
     var fs = require('fs');
-    console.log('fs = ' + sys.inspect(fs));
     var ds = new Datastore(settings);
     var form = require('connect-form');
     this.content = ds;
@@ -14,7 +13,6 @@
     fs.readdir(settings.FrontEndViews, function(err, files){
       if(!err){
         frontEndTemplates = files;
-        console.log('Got the template list: ' + sys.inspect(frontEndTemplates));
       }
     });
 
@@ -41,7 +39,38 @@
       
       //REST Resources
       server.put("/_content", function(req,res,next){
-        var doc = req.body;
+        var doc = processIncomingBody(req.body);
+        ds.updateContent(doc.__id, doc, function(result){
+           if(result){
+             res.send({status: true});
+           }
+           else{
+             res.send({status: false})
+           }
+        });
+      });
+    
+      server.post("/_content", function(req,res,next){
+        var doc = processIncomingBody(req.body);
+        //make our content item and populate it with the form field values
+        var content = ds.makeContent(doc.__contenttype);
+        content.getProperties().forEach(function(item){
+          if(doc.hasOwnProperty(item.name)){
+            content[item.name] = doc[item.name];
+          }
+        });
+        ds.addContentToSitemap(content, doc.__parentid, doc.__template, function(result){
+          if(result){
+             res.send({status: true});
+           }
+           else{
+             res.send({status: false})
+           }
+        });
+      });
+      
+      function processIncomingBody(body){
+        var doc = body;
         if(!doc.hasOwnProperty('__hidden_from_navigation')){
          doc['__hidden_from_navigation'] = 'false';
         }
@@ -52,16 +81,8 @@
           doc['__hidden_from_navigation'] = false;
         }
         console.log(sys.inspect(doc));
-        console.log('About to call ds.updateContent with id of ' + doc.__id);
-        ds.updateContent(doc.__id, doc, function(result){
-          if(result){
-             res.send({status: true});
-           }
-           else{
-             res.send({status: false})
-           }
-          });
-      });
+        return doc;
+      }
       
       //main admin page loader route
       server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
@@ -76,10 +97,34 @@
           });
         });
       });
+      
+      //admin create new item route
+      server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)/?_new/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
+        var contenttype = req.params[1];
+        if(ds.contentTypes.indexOf(contenttype) < 0 ){
+          //move on, this is a 404. That content type is not valid
+          console.log('tried to go to a create new content page with an invalid content type');
+          next();
+        }
+        findContentOrPassToNext(req.params[0], next, function(result){
+          var locals = {};
+          locals.adminassets = settings.AdminAssetsWebPath;
+          locals.sys = sys;
+          locals.templates = frontEndTemplates;
+          locals.location = {}
+          locals.location.template = result.location.template;
+          locals.location.parentid = convertIdToString(result.location._id);
+          locals.location.contenttype = contenttype;
+          locals.content = ds.makeContent(contenttype);
+          locals.content.title = 'New ' + contenttype;
+          res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
+            layout: false,
+            locals : locals,
+          });
+        });
+      });
 
       //user login route
-
-      //admin create new item route
 
       //admin update existing item route 
     }
@@ -88,8 +133,7 @@
       var toreturn = {};
       toreturn.content = result.content;
       toreturn.location = result.location;
-      toreturn.id = JSON.stringify(result.location._id).replace(/"/g, '');
-      console.log('DOC ID = ' + toreturn.id);
+      toreturn.id = convertIdToString(result.location._id);
       toreturn.templates = frontEndTemplates;
       //get children from location
       result.location.getChildren(function(children){
@@ -115,7 +159,6 @@
     }
 
     function findContentOrPassToNext(path, next, callback){
-      console.log('Got a request at path: ' + path)
       ds.getContentItemForPath(path, function(result){
         if(result){
           callback(result)
@@ -127,7 +170,9 @@
     }
   }
   
-  
+  function convertIdToString(id){
+    return JSON.stringify(id).replace(/"/g, '');
+  }
   
   
 })();

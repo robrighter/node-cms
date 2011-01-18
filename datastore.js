@@ -11,6 +11,7 @@
     var that = this;
     //setup the db
     var db = mongoose.connect(settings.MongoConnectionString);
+    this.contentTypes = [];
     
     //////////////////////////////////////////////////
     //            System Models
@@ -89,6 +90,9 @@
             },
             preRenderingTasks: preRenderingTasks
           },methods)});
+        //add it to the content type list
+        this.contentTypes.push(name);
+        
     }
   
     this.makeContent = function(type){
@@ -103,14 +107,14 @@
       content.save(function(result){
         //now save the content into the content graph
         var toadd = new NodeCMSContentGraph();
-        toadd.slug = this.slugify(content.title.text);
+        toadd.slug = slugify(content.title.text);
         toadd.parentid = parentid;
         toadd.template = template;
         toadd.contentid = content._id;
         toadd.contenttype = content.contenttype;
         console.log('Adding this content to the sitemap of type: ' + toadd.contenttype);
         toadd.save(function(){
-          callback();
+          callback(true);
         });
       });
       
@@ -122,7 +126,6 @@
     this.updateContent = function(id, doc, callback){
       console.log('Trying to find node graph of id = ' + id);
       NodeCMSContentGraph.findById(id).first(function(cg){
-        console.log('GOT HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         if(!cg){
           //didnt find it, just return false
           callback(false);
@@ -164,9 +167,7 @@
       if(result){
         //found it, now lets lookup the conntent item
         var contentmodel = db.model(result.contenttype);
-        console.log('Found result: ' + result.contentid);
         contentmodel.find({ _id: result.contentid }).first(function(contentitem){
-          console.log(sys.inspect({location: result, content: contentitem}));
           callback({location: result, content: contentitem});
         });
         
@@ -191,23 +192,15 @@
       var i = 0;
       //recursive function that goes until we get to the end of the page
       var iter = function(cursor){
-        
-        console.log('Currently the cursor is at: ' + (cursor? cursor.slug : 'NOTHING') );
-        console.log('here ? (path.length) = '+ (path.length) + " i="+i);
         if(!cursor){
           //we got nothing, this is a 404
-          console.log('here 2');
           callback(false);
         }
         else if(i == (path.length)){
-          console.log('here 3');
           //we found it, lets return it in the callback
-          console.log('ok I think we found it:');
-          console.log(sys.inspect(cursor));
           processFoundResult(cursor,callback);
         }
         else{
-          console.log('here 4');
           //still going keep iterating
           var tofind = { parentid: cursor._id, slug: path[i++] };
           console.log('Still not there, now we are looking for: ' + sys.inspect(tofind));
@@ -315,7 +308,7 @@
     /////////////////////////////////////////////////////
     //           utils
     ////////////////////////////////////////////////////  
-    this.slugify = function(text) {
+    function slugify(text) {
       text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
       text = text.replace(/\s/gi, "-");
       return text.toLowerCase();
