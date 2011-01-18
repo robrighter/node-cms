@@ -120,15 +120,37 @@
     //           content update
     ////////////////////////////////////////////////////
     this.updateContent = function(id, doc, callback){
-      var ContentModel = db.model(doc.content.contenttype);
-      ContentModel.update(doc.content.id, id,doc.content,function(result){
-        //now updated the graph item too
-        NodeCMSContentGraph,update(doc.location.id, doc.location, function(result){
-          callback({status: 'ok'});
-        });
-        //['slug', 'template', 'parentid', 'contentid', 'contenttype', 'hidden_from_navigation'],NodeCMSContentGraph
-      });
-    };
+      console.log('Trying to find node graph of id = ' + id);
+      NodeCMSContentGraph.findById(id).first(function(cg){
+        console.log('GOT HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        if(!cg){
+          //didnt find it, just return false
+          callback(false);
+        }
+        //found it
+        //set the template and hidden fields on the contentgraph item
+        cg.template = doc.__template;
+        cg.hidden_from_navigation = doc.__hidden_from_navigation;
+        //grab the content type and make the model
+        var contentmodel = db.model(cg.contenttype);
+        //run the save for the template
+        cg.save(function(){console.log('Content Saved')});
+        //delete the non-content related items from the doc
+        delete doc['__template'];
+        delete doc['__id'];
+        //run the content update
+        contentmodel.findById(cg.contentid, function(content){
+          content.getProperties().forEach(function(p){
+            if(doc.hasOwnProperty(p.name)){
+              content[p.name] = doc[p.name];
+            }
+          });
+          content.save(function(){
+            callback(true);
+          });
+        });    
+      });    
+    }
 
     /////////////////////////////////////////////////////
     //           content Deletion
@@ -143,12 +165,11 @@
         //found it, now lets lookup the conntent item
         var contentmodel = db.model(result.contenttype);
         console.log('Found result: ' + result.contentid);
-        setTimeout(function(){
-          contentmodel.find({ _id: result.contentid }).first(function(contentitem){
-            console.log(sys.inspect({location: result, content: contentitem}));
-            callback({location: result, content: contentitem});
-          });
-        }, 100)
+        contentmodel.find({ _id: result.contentid }).first(function(contentitem){
+          console.log(sys.inspect({location: result, content: contentitem}));
+          callback({location: result, content: contentitem});
+        });
+        
         
       }
       else{

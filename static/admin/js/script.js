@@ -6,6 +6,7 @@ $(document).ready(function() {
    //$( ".cta").button();
    //$( ".cta").button();
    
+   $("select, input:checkbox, input:radio, input:file").uniform();
    
    $('#editor').submit( function(){
      var formvals = $('#editor').serialize();

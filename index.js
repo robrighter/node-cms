@@ -41,8 +41,6 @@
       
       //REST Resources
       server.put("/_content", function(req,res,next){
-        console.log(sys.inspect(req.body));
-        
         var doc = req.body;
         if(!doc.hasOwnProperty('__hidden_from_navigation')){
          doc['__hidden_from_navigation'] = 'false';
@@ -53,15 +51,16 @@
         else{
           doc['__hidden_from_navigation'] = false;
         }
-        res.send({status: false});
-        // ds.updateContent(id, doc, function(result){
-        //          if(result){
-        //            res.send({status: true});
-        //          }
-        //          else{
-        //            res.send({status: false})
-        //          }
-        //         });
+        console.log(sys.inspect(doc));
+        console.log('About to call ds.updateContent with id of ' + doc.__id);
+        ds.updateContent(doc.__id, doc, function(result){
+          if(result){
+             res.send({status: true});
+           }
+           else{
+             res.send({status: false})
+           }
+          });
       });
       
       //main admin page loader route
@@ -89,8 +88,8 @@
       var toreturn = {};
       toreturn.content = result.content;
       toreturn.location = result.location;
-      toreturn.id = JSON.stringify(result.location._id).replace('"', '');
-      console.log('DOC ID = ' + JSON.stringify(result.location._id));
+      toreturn.id = JSON.stringify(result.location._id).replace(/"/g, '');
+      console.log('DOC ID = ' + toreturn.id);
       toreturn.templates = frontEndTemplates;
       //get children from location
       result.location.getChildren(function(children){
@@ -114,17 +113,6 @@
       
       //preRenderingTasks
     }
-    
-    // function prepareAdminInputs(info, contentproperties){
-    //       console.log('--------------------------------------------------');
-    //       console.log('READY TO PREPARE ADMINS:');
-    //       console.log(sys.inspect(info));
-    //       console.log('The Properties for this model are:');
-    //       console.log(sys.inspect(info.content.getProperties()));
-    //       //prepare the input list
-    //       return info;
-    //     }
-
 
     function findContentOrPassToNext(path, next, callback){
       console.log('Got a request at path: ' + path)
