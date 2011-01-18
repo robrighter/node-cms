@@ -15,7 +15,7 @@
 	  <div id='closer'>X</div>
     <div id="main">
        <h1><%= content.title.text %></h1>
-	     <h2><%= location.contenttype %></h2> <em>Last Updated: <%= content.updated_at.date %></em>
+	     <h2><%= location.contenttype %></h2>
 	 		 <div class='section'>
 					<!-- ><pre>
 						Properties:
@@ -27,11 +27,11 @@
 						Children
 						<%= sys.inspect(children)%>
 					</pre> -->
+					<div class="message"></div>
 		 	 		<form id='editor'>
 						<input type='hidden' name='__id' value='<%= id %>'>
 						<%
 							content.getProperties().forEach(function(item){
-								//Text,RichText,SingleDate,Image,File,Select,Boolean
 								if(item.value.uneditable){
 									//this item is flagged to be ignored
 									return
@@ -99,7 +99,7 @@
 							<p>Hide this page from navigation and other lists 
 								<input name='__hidden_from_navigation' type='checkbox' value='true' <%= (location.hidden_from_navigation) ? 'checked':''%> /></p>
 						</div>
-						<input type='submit' id="save" class="cta" value='Save' />
+						<button type='submit' id="save" value='Save' class="right orange" >Save</button>
 					</form>
 			</div>
 			<div class='break'></div>
@@ -114,12 +114,12 @@
 					<%
 					});
 					%>
-					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
-					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
-					<tr><td><a href="">This is a page title</a></td><td>page</td><td>Dec 2, 2010</td><td><a href="">edit</a></td><td><a href="">delete</a></td></tr>
 				</table>
+				<button type='submit' id="addcontent" class="right orange" >Add new content item under this <%= location.contenttype %></button>
+				<div class="break"></div>
 			</div>
     </div>
+    <em>Last Updated: <%= content.updated_at.date %></em>
   </div> <!--! end of #container -->
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
