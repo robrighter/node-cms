@@ -22,7 +22,10 @@
         indexes: ['slug', 'contentid', 'parentid', 'contenttype'],
         methods : {
           getChildren: function(callback){
-            NodeCMSContentGraph.find({ parentid: this._id }).all(callback);
+            NodeCMSContentGraph.find({ parentid: that.convertIdToString(this._id) }).all(function(result){
+                console.log(sys.inspect(result));
+                callback(result);
+              });
           }
         }
     });
@@ -202,7 +205,7 @@
         }
         else{
           //still going keep iterating
-          var tofind = { parentid: cursor._id, slug: path[i++] };
+          var tofind = { parentid: that.convertIdToString(cursor._id), slug: path[i++] };
           console.log('Still not there, now we are looking for: ' + sys.inspect(tofind));
           NodeCMSContentGraph.find(tofind).first(iter);
         }
@@ -344,6 +347,10 @@
           }
         });
       }
+    }
+    
+    this.convertIdToString = function(id){
+      return JSON.stringify(id).replace(/"/g, '');
     }
     
     

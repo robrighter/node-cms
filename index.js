@@ -113,7 +113,7 @@
           locals.templates = frontEndTemplates;
           locals.location = {}
           locals.location.template = result.location.template;
-          locals.location.parentid = convertIdToString(result.location._id);
+          locals.location.parentid = ds.convertIdToString(result.location._id);
           locals.location.contenttype = contenttype;
           locals.content = ds.makeContent(contenttype);
           locals.content.title = 'New ' + contenttype;
@@ -133,7 +133,7 @@
       var toreturn = {};
       toreturn.content = result.content;
       toreturn.location = result.location;
-      toreturn.id = convertIdToString(result.location._id);
+      toreturn.id = ds.convertIdToString(result.location._id);
       toreturn.templates = frontEndTemplates;
       //get children from location
       result.location.getChildren(function(children){
@@ -170,9 +170,7 @@
     }
   }
   
-  function convertIdToString(id){
-    return JSON.stringify(id).replace(/"/g, '');
-  }
+  
   
   
 })();
