@@ -218,15 +218,24 @@ button {  width: auto; overflow: visible; }
   right: 30px; 
   bottom: 30px;
   left: 30px;
-  background: #cccccc;
-  padding: 22px;
+  background: #ccc;
+  padding: 30px;
+  
   opacity: 0.85;
-  border: 10px solid rgba(255,255,255,0.7);
   overflow-y: scroll;
   -moz-box-shadow: 5px 5px 5px #ccc;
   -webkit-box-shadow: 5px 5px 5px #ccc;
   box-shadow: 5px 5px 5px #ccc;
+  
+  -moz-background-clip: padding;     /* Firefox 3.6 */
+  -webkit-background-clip: padding;  /* Safari 4? Chrome 6? */
+  background-clip: padding-box;      /* Firefox 4, Safari 5, Opera 10, IE 9 */
+  border: 10px solid rgba(0,0,0,0.3);
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
 }
+
 
 #container h1{
   font-family: 'Helvetica', arial, serif;
@@ -279,6 +288,20 @@ input.prop {
 textarea.prop {
   height: 100px;
   font-size: 20px;
+}
+
+.singlefile {
+  background-color: #FFF;
+  border: 1px solid #8B8B8B;
+  border-radius: 5px;
+  width: 197px;
+  padding: 5px;
+  padding-left: 9px;
+}
+
+.inputgroup .preview{
+  width: 50px;
+  float: right;
 }
 
 .cta {
@@ -444,6 +467,37 @@ button:active {
   margin-top: 10px;
 }
 
+.subpageadder {
+  background-color: #B1B1B1;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #FFF;
+  width: 440px;
+  float: right;
+}
+
+.subpageadder .controls{
+ float: left;
+ margin-top: 5px;
+}
+
+#goup:hover{
+  color: #3176B2;
+  cursor: pointer;
+}
+
+#goup{
+  font-size: 12px;
+  position: relative;
+  top: -30px;
+  left: -23px;
+}
+
+#goup .arrow{
+  font-size: 20px;
+}
 
 
 /* 

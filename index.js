@@ -61,7 +61,7 @@
         });
         ds.addContentToSitemap(content, doc.__parentid, doc.__template, function(result){
           if(result){
-             res.send({status: true});
+             res.send({status: true, newslug: result.slug});
            }
            else{
              res.send({status: false})
@@ -86,10 +86,14 @@
       
       //main admin page loader route
       server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
+        console.log('The Query String is: ' + sys.inspect(req.query));
         findContentOrPassToNext(req.params[0], next, function(result){
           prepareModelResultForAdmin(result, function(locals){
             locals.adminassets = settings.AdminAssetsWebPath;
+            locals.contenttypes = ds.contentTypes;
             locals.sys = sys;
+            locals.confirm = (req.query['confirm'] || '');
+            locals.warning = (req.query['warning'] || '');
             res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
               layout: false,
               locals : locals,
@@ -111,6 +115,8 @@
           locals.adminassets = settings.AdminAssetsWebPath;
           locals.sys = sys;
           locals.templates = frontEndTemplates;
+          locals.confirm = (req.params['confirm'] || '');
+          locals.warning = (req.params['warning'] || '');
           locals.location = {}
           locals.location.template = result.location.template;
           locals.location.parentid = ds.convertIdToString(result.location._id);

@@ -57,7 +57,6 @@
         
     });
     var User = db.model('_User');
-    createInitialAdminIfDoesntExist();
     
     /////////////////////////////////////////////////////
     //           content creation
@@ -117,7 +116,7 @@
         toadd.contenttype = content.contenttype;
         console.log('Adding this content to the sitemap of type: ' + toadd.contenttype);
         toadd.save(function(){
-          callback(true);
+          callback(toadd);
         });
       });
       
@@ -283,9 +282,27 @@
           this.type = this.constructor.name;
         }
         return function(v){ return new SingleDate(v); };
-      } 
-      //TODO: Image,
-      //TODO: File,
+      },
+      Image: function(adminlabel, adminorder, uneditable){ 
+        function Image(value){
+          this.adminLabel = adminlabel;
+          this.adminOrder = adminorder;
+          this.url = value;
+          this.alt = '';
+          this.type = this.constructor.name;
+        }
+        return function(v){ return new Image(v); };
+      },
+      File: function(adminlabel, adminorder, uneditable){ 
+        function File(value){
+          this.adminLabel = adminlabel;
+          this.adminOrder = adminorder;
+          this.url = value.url;
+          this.title = value.title;
+          this.type = this.constructor.name;
+        }
+        return function(v){ return new Image(v); };
+      }, 
       //TODO: Select,
       //TODO: Boolean
       //TODO: DateRange  
@@ -299,8 +316,9 @@
       
       //simple page
       that.createContentType('Page', {
-          article: fieldTypes.RichText("Article", 4),
-          teaser: fieldTypes.Text("Summary", 3) 
+          article: fieldTypes.RichText("Article", 5),
+          teaser: fieldTypes.Text("Summary", 3),
+          hero: fieldTypes.Image('Hero Image', 4) 
       });
     }
     
@@ -349,10 +367,29 @@
       }
     }
     
+    function createInitialRootIfDoesntExist(){
+      that.getRoot(function(root){
+        if(!root){
+          //The database has no Root folder, lets make a new one
+          newroot = that.makeContent('Folder');
+          newroot.title = "Home";
+          newroot.hidden_from_navigation = false;
+          newroot.article = '';
+          that.addContentToSitemap(newroot, 0, 'index.ejs', function(result){
+            console.log('Database had no Root Folder so it was created.');
+          });
+        }
+      });
+    }
+    
     this.convertIdToString = function(id){
       return JSON.stringify(id).replace(/"/g, '');
     }
     
-    
+    //////////////////////////////////////////////////
+    //           Make Initials
+    /////////////////////////////////////////////////
+    createInitialAdminIfDoesntExist();
+    createInitialRootIfDoesntExist();
   }
 })()

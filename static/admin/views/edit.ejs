@@ -14,6 +14,7 @@
   <div id="container">
 	  <div id='closer'>X</div>
     <div id="main">
+	 		 <div id='goup'><span class='arrow'>&#8689;</span> go up one level</div>
        <h1><%= content.title.text %></h1>
 	     <h2><%= location.contenttype %></h2>
 	 		 <div class='section'>
@@ -25,7 +26,20 @@
 						<%= sys.inspect(location)%>
 						
 					</pre> -->
-					<div class="message"></div>
+					<%
+					if(confirm){
+						%><div class="message confirm"><%= confirm %></div><%
+					}
+				  else if(warning){
+							%><div class="message warning"><%= warning %></div><%
+					}
+					else{
+						%><div class="message"></div><%
+					}
+					
+					%>
+					
+					
 		 	 		<form id='<%= (content.isNew ? 'makenew' : 'editor' )%>'>
 						<%
 							if(content.isNew){
@@ -81,8 +95,12 @@
 								%>
 									<div class='inputgroup'>
 										<div class='label'><%=item.value.adminLabel%></div>
-										<input class="prop" type='file' name='<%=item.name%>' />
-										<img src="<%=item.value.url%>" />
+										  <img class='preview' src="<%=item.value.url%>" />
+											<div class='singlefile'>
+												<input class="prop" type='file' name='<%=item.name%>' />
+											</div>
+											
+										  <div class='break'></div>
 									</div>
 								<%	
 								}
@@ -116,11 +134,11 @@
 				
 			<hr>
 			<div class='section'>
-				<h2>Content under this Folder</h2>
+				<h2>Subpages</h2>
 				<%
 					if(children.length == 0){
 				%>
-							<div class="subnavlist">Currently there are no content items under this <%= location.contenttype %></div>
+							<div class="subnavlist">Currently this <%= location.contenttype %> does not have any subpages.</div>
 				<%		
 					}
 				%>
@@ -128,12 +146,24 @@
 					<%
 					children.forEach(function(item){
 					%>
-					<tr><td><a href="<%=item.slug%>"><%=item.slug%></a></td><td><%=item.contenttype%></td><td>Dec 2, 2010</td><td><a href="<%=item.slug%>">edit</a></td><td><a href="">delete</a></td></tr>	
+					<tr><td><a href="<%=item.slug%>/"><%=item.slug%></a></td><td><%=item.contenttype%></td><td>Dec 2, 2010</td><td><a href="<%=item.slug%>">edit</a></td><td><a href="">delete</a></td></tr>	
 					<%
 					});
 					%>
 				</table>
-				<button type='submit' id="addcontent" class="right orange" >Add new content item under this <%= location.contenttype %></button>
+				<div class="subpageadder">
+					<div class="controls">Add a subpage of type: 
+						<select class='contenttypeselector'>
+							<%
+							contenttypes.forEach(function(item){
+								%><option><%=item%></option><%
+							});
+							%>
+						</select>
+					</div>
+					<button type='submit' id="addcontent" class="right orange" >Add</button>
+				</div>	
+				
 				<div class="break"></div>
 			</div>
 			<%}
