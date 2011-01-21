@@ -79,9 +79,9 @@
             ds.addContentToSitemap(content, doc.__parentid, doc.__template, function(result){
               if(result){
                 ds.getPathForItem(result, function(path){
-                  console.log('REDIRECTING TO: ' + '_admin/'+path);
+                  console.log('REDIRECTING TO: ' + '/_admin/'+path);
                   req.flash('confirm', 'Success! The page has been saved.');
-                  res.redirect('_admin/' + path);
+                  res.redirect('/_admin/' + path);
                 });
                  //res.send({status: true, newslug: result.slug});
                }

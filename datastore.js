@@ -217,18 +217,25 @@
       var iter = function(result){
         console.log('ITERATING with: ' + sys.inspect(result));
         if(result.parentid == 0){
-          if(path.length > 0){
+          if(path.length == 0){
             //this is the first one, so the path is actually /
+            console.log('Current path: ' + sys.inspect(path));
+            console.log('RETURNING AS ROOT!!!!!');
             callback('/');
           }
           else{
-            callback(path.join('/'));
+            var toreturn = path.join('/');
+            console.log('About to return from getPathForItem: ' + path.join('/'));
+            callback(toreturn);
           }
         }
         else{
           //still not there yet so lets add the slug and move on
-          path.push(result.slug);
-          NodeCMSContentGraph.find({ __id: result.parentid }).first(iter);
+          path.unshift(result.slug);
+          console.log('Looking for parentid of: ' + result.parentid);
+          console.log('Current path: ' + sys.inspect(path));
+          console.log('Joined path = ' + path.join('/'));
+          NodeCMSContentGraph.findById(result.parentid).first(iter);
         }
       }
       iter(item);
