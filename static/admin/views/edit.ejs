@@ -39,8 +39,8 @@
 					
 					%>
 					
-					
-		 	 		<form id='<%= (content.isNew ? 'makenew' : 'editor' )%>'>
+					<!-- id='<%= (content.isNew ? 'makenew' : 'editor' )%>' -->
+		 	 		<form  enctype="multipart/form-data" action="/_content/<%= (content.isNew ? 'ADD' : 'UPDATE' )%>" method='POST'>
 						<%
 							if(content.isNew){
 								%>
@@ -95,9 +95,13 @@
 								%>
 									<div class='inputgroup'>
 										<div class='label'><%=item.value.adminLabel%></div>
-										  <img class='preview' src="<%=item.value.url%>" />
+										  <%
+												if(item.value.url != ''){
+													%><img class='preview' src="<%= (uploadedfiles +'/'+ item.value.filename) %>" /><%
+												}
+											%>
 											<div class='singlefile'>
-												<input class="prop" type='file' name='<%=item.name%>' />
+												<input class="prop" type='file' id='uploadertest' name='<%=item.name%>' />
 											</div>
 											
 										  <div class='break'></div>

@@ -300,8 +300,11 @@ textarea.prop {
 }
 
 .inputgroup .preview{
-  width: 50px;
-  float: right;
+  height: 70px;
+  position: absolute;
+  margin-left: 230px;
+  border-bottom: 1px solid #FFF;
+  border-radius: 10px;
 }
 
 .cta {

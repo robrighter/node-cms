@@ -7,8 +7,11 @@ $(document).ready(function() {
    $("select, input:checkbox, input:radio, input:file").uniform();
    
    $('#editor').submit( function(){
+     alert('HERE!!!');
      $('.message').slideUp('fast');
      var formvals = $('#editor').serialize();
+     console.log('SERIALIZED FORM VALS :');
+     console.log(formvals);
      $.ajax({
        type: "PUT",
        url: "/_content",
@@ -26,6 +29,7 @@ $(document).ready(function() {
    });
    
    $('#makenew').submit( function(){
+      alert('HERE!!!');
       $('.message').slideUp('fast');
       var formvals = $('#makenew').serialize();
       $.ajax({

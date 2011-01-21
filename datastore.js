@@ -23,7 +23,6 @@
         methods : {
           getChildren: function(callback){
             NodeCMSContentGraph.find({ parentid: that.convertIdToString(this._id) }).all(function(result){
-                console.log(sys.inspect(result));
                 callback(result);
               });
           }
@@ -205,12 +204,34 @@
         else{
           //still going keep iterating
           var tofind = { parentid: that.convertIdToString(cursor._id), slug: path[i++] };
-          console.log('Still not there, now we are looking for: ' + sys.inspect(tofind));
           NodeCMSContentGraph.find(tofind).first(iter);
         }
       };
       //alright lets kick it off by grabing the root item (the one with a parentid of 0)
       NodeCMSContentGraph.find({ parentid: 0 }).first(iter);
+    }
+    
+    this.getPathForItem = function(item, callback){
+      path = [];
+      //make an iter function that will be run recursively
+      var iter = function(result){
+        console.log('ITERATING with: ' + sys.inspect(result));
+        if(result.parentid == 0){
+          if(path.length > 0){
+            //this is the first one, so the path is actually /
+            callback('/');
+          }
+          else{
+            callback(path.join('/'));
+          }
+        }
+        else{
+          //still not there yet so lets add the slug and move on
+          path.push(result.slug);
+          NodeCMSContentGraph.find({ __id: result.parentid }).first(iter);
+        }
+      }
+      iter(item);
     }
     
     function getUserByUsername(username, callback){
@@ -287,8 +308,8 @@
         function Image(value){
           this.adminLabel = adminlabel;
           this.adminOrder = adminorder;
-          this.url = value;
-          this.alt = '';
+          this.filename = value.filename;
+          this.alt = value.alt;
           this.type = this.constructor.name;
         }
         return function(v){ return new Image(v); };

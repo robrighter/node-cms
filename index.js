@@ -21,9 +21,6 @@
     /////////////////////////////////////////////////////
     this.setupExpressJSRoutes = function(server){
 
-      //add in the form handler
-      server.use(form({ keepExtensions: true }));
-
       //main page loader route
       server.get(new RegExp("^([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
         findContentOrPassToNext(req.params[0], next, function(result){
@@ -38,39 +35,83 @@
       });
       
       //REST Resources
-      server.put("/_content", function(req,res,next){
-        var doc = processIncomingBody(req.body);
-        ds.updateContent(doc.__id, doc, function(result){
-           if(result){
-             res.send({status: true});
-           }
-           else{
-             res.send({status: false})
-           }
-        });
+      server.post("/_content/UPDATE", function(req,res,next){
+        var isform = processForm(req, function(err, fields, files){
+            console.log('The arguements: ' + sys.inspect(arguments));
+            if(err){
+              req.flash('warning', 'Oops. The page encountered an error and was not saved.');
+              res.redirect('back');
+            }
+            var doc = processIncomingFormFields(fields, files);
+            ds.updateContent(doc.__id, doc, function(result){
+               if(result){
+                 req.flash('confirm', 'Success! The page has been saved.');
+                 res.redirect('back');
+                 //res.send({status: true});
+               }
+               else{
+                 req.flash('warning', 'Oops. The page encountered an error and was not saved.');
+                 res.redirect('back');
+               }
+            });
+        })
+        
+        if(!isform){
+          //no form was submitted so lets pass it on for a 404
+          next();
+        }
       });
     
-      server.post("/_content", function(req,res,next){
-        var doc = processIncomingBody(req.body);
-        //make our content item and populate it with the form field values
-        var content = ds.makeContent(doc.__contenttype);
-        content.getProperties().forEach(function(item){
-          if(doc.hasOwnProperty(item.name)){
-            content[item.name] = doc[item.name];
-          }
-        });
-        ds.addContentToSitemap(content, doc.__parentid, doc.__template, function(result){
-          if(result){
-             res.send({status: true, newslug: result.slug});
-           }
-           else{
-             res.send({status: false})
-           }
-        });
+      server.post("/_content/ADD", function(req,res,next){
+        var isform = processForm(req, function(err, fields, files){
+            if(err){
+              req.flash('warning', 'Oops. The page encountered an error and was not saved.');
+              res.redirect('back');
+            }
+            var doc = processIncomingFormFields(fields, files);
+            //make our content item and populate it with the form field values
+            var content = ds.makeContent(doc.__contenttype);
+            content.getProperties().forEach(function(item){
+              if(doc.hasOwnProperty(item.name)){
+                content[item.name] = doc[item.name];
+              }
+            });
+            ds.addContentToSitemap(content, doc.__parentid, doc.__template, function(result){
+              if(result){
+                ds.getPathForItem(result, function(path){
+                  console.log('REDIRECTING TO: ' + '_admin/'+path);
+                  req.flash('confirm', 'Success! The page has been saved.');
+                  res.redirect('_admin/' + path);
+                });
+                 //res.send({status: true, newslug: result.slug});
+               }
+               else{
+                 req.flash('warning', 'Oops. The page encountered an error and was not saved.');
+                 res.redirect('back');
+               }
+            });
+        })
+        
+        if(!isform){
+          //no form was submitted so lets pass it on for a 404
+          next();
+        }
+        
+        
       });
       
-      function processIncomingBody(body){
-        var doc = body;
+      function processForm(req, callback){
+        if(req.form){
+          req.form.complete(callback);
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+      
+      function processIncomingFormFields(fields, files){
+        var doc = fields;
         if(!doc.hasOwnProperty('__hidden_from_navigation')){
          doc['__hidden_from_navigation'] = 'false';
         }
@@ -80,20 +121,26 @@
         else{
           doc['__hidden_from_navigation'] = false;
         }
+        
+        for(key in files){
+          doc[key] = { filename: stripFileNameFromUploadPath(files[key].path), alt: '' };
+        }
+        
+        console.log("FIELDS:");
         console.log(sys.inspect(doc));
         return doc;
       }
       
       //main admin page loader route
       server.get(new RegExp("^\/_admin\/([a-zA-Z0-9\-\/]*)$"), function(req,res,next){
-        console.log('The Query String is: ' + sys.inspect(req.query));
         findContentOrPassToNext(req.params[0], next, function(result){
           prepareModelResultForAdmin(result, function(locals){
             locals.adminassets = settings.AdminAssetsWebPath;
             locals.contenttypes = ds.contentTypes;
             locals.sys = sys;
-            locals.confirm = (req.query['confirm'] || '');
-            locals.warning = (req.query['warning'] || '');
+            locals.uploadedfiles = settings.UploadedFilesWebPath;
+            locals.confirm = (req.flash('confirm') || '');
+            locals.warning = (req.flash('warning') || '');
             res.render(settings.AdminAssetsFilePath + '/views/edit.ejs', {
               layout: false,
               locals : locals,
@@ -115,6 +162,7 @@
           locals.adminassets = settings.AdminAssetsWebPath;
           locals.sys = sys;
           locals.templates = frontEndTemplates;
+          locals.uploadedfiles = settings.UploadedFilesWebPath;
           locals.confirm = (req.params['confirm'] || '');
           locals.warning = (req.params['warning'] || '');
           locals.location = {}
@@ -174,6 +222,13 @@
         }
       });
     }
+    
+    function stripFileNameFromUploadPath(filepath){
+      return filepath.replace(settings.UploadedFiles, '').replace(/\//g, '');
+    }
+    
+    
+    
   }
   
   
