@@ -185,10 +185,39 @@
         processFoundResult(result,callback);
       });
     }
-  
+
+    this.getRootForPath = function(path, callback){
+        //find the root item for this path
+        //first get a list of all posible roots
+        path = path.split('/').filter(function(item){return item!==''});
+        var counter = path.length;
+        var possibleroots = path.map(function(item){
+          return path.slice(0,counter--);
+        });
+        
+        //now walk down the possibilities starting with the longest first until you find the root
+        counter = 0;
+        var iter = function(result){
+          if(result){
+            //found it. retun what we have
+            callback(result);
+          }
+          else if(counter == possibleroots.length){
+            //thas it, no more left, there is no root in this path
+            callback(false);
+          
+          }
+          else{
+            //still looking try the next page
+            var tofind = { slug: possibleroots[counter++] };
+            NodeCMSContentGraph.find(tofind).first(iter);
+          } 
+        }
+    }
+    
     this.getContentItemForPath = function(path, callback){
       //turn the path into an array and strip out all of the ''s
-      path = path.split('/').filter(function(item){return item!==''});
+      
       console.log('Looking for the this path in the database: ' + sys.inspect(path));
       var i = 0;
       //recursive function that goes until we get to the end of the page
@@ -208,7 +237,8 @@
         }
       };
       //alright lets kick it off by grabing the root item (the one with a parentid of 0)
-      NodeCMSContentGraph.find({ parentid: 0 }).first(iter);
+      this.getRootForPath(path, iter);
+      //NodeCMSContentGraph.find({ parentid: 0 }).first(iter);
     }
     
     this.getPathForItem = function(item, callback){
@@ -221,10 +251,10 @@
             //this is the first one, so the path is actually /
             console.log('Current path: ' + sys.inspect(path));
             console.log('RETURNING AS ROOT!!!!!');
-            callback('/');
+            callback(result.slug);
           }
           else{
-            var toreturn = path.join('/');
+            var toreturn = result.slug + path.join('/');
             console.log('About to return from getPathForItem: ' + path.join('/'));
             callback(toreturn);
           }
